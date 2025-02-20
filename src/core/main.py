@@ -22,7 +22,11 @@ def main():
         error("No models available. Exiting...")
         quit(0)
 
+    db_dir = BASE_DIR / "db"
+    db_dir.mkdir(parents=True, exist_ok=True)
+
     app = App(
+        db_dir,
         a_models,
         docs_url=None, redoc_url=None
     )

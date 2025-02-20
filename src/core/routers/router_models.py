@@ -30,10 +30,11 @@ class ModelsRouter(AuthRouter):
             ]
         ]
 
+        self.add_api_route("/v1/models", self._models, methods=["GET"])
         self.add_api_route("/v1/models/{model}", self._model_info, methods=["GET"])
 
     async def _models(self, authorization: str = Header(None)):
-        if not self._check_auth(authorization):
+        if not await self._check_auth(authorization):
             return self._auth_error_response()
 
         data = {
@@ -44,7 +45,7 @@ class ModelsRouter(AuthRouter):
         return Response(content=json.dumps(data, indent=2), media_type="application/json")
 
     async def _model_info(self, model: str, authorization: str = Header(None)):
-        if not self._check_auth(authorization):
+        if not await self._check_auth(authorization):
             return self._auth_error_response()
 
         models = [m for m in self._all_models if m["model_name"] == model]

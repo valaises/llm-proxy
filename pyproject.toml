@@ -7,6 +7,7 @@ requires-python = ">=3.12"
 dependencies = [
     "fastapi>=0.115.8",
     "litellm>=1.61.9",
+    "pydantic[email]>=2.10.6",
     "termcolor>=2.5.0",
     "uvicorn>=0.34.0",
     "uvloop>=0.21.0",

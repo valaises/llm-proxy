@@ -7,4 +7,6 @@ services:
       - .env
     ports:
       - "7012:7012"
+    volumes:
+      - ./db:/app/db
     restart: unless-stopped
