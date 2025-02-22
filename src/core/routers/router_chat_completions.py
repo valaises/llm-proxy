@@ -1,3 +1,4 @@
+import asyncio
 import json
 from http.client import HTTPException
 from queue import Queue
@@ -39,6 +40,51 @@ async def litellm_completion_stream(
 ):
     prefix, postfix = "data: ", "\n\n"
     finish_reason = None
+
+    if 1:
+        yield prefix + json.dumps(
+            {"id": "chatcmpl-123", "object": "chat.completion.chunk", "created": 1694268190, "model": "",
+             "system_fingerprint": "", "choices": [
+                {"index": 0, "delta": {"role": "assistant", "content": "1"}, "logprobs": None,
+                 "finish_reason": None}
+            ]}) + postfix
+        await asyncio.sleep(1)
+        yield prefix + json.dumps(
+            {"id": "chatcmpl-123", "object": "chat.completion.chunk", "created": 1694268190, "model": "",
+             "system_fingerprint": "", "choices": [
+                {"index": 0, "delta": {"role": "assistant", "content": "2"}, "logprobs": None,
+                 "finish_reason": None}
+            ]}) + postfix
+        await asyncio.sleep(1)
+        yield prefix + json.dumps(
+            {"id": "chatcmpl-123", "object": "chat.completion.chunk", "created": 1694268190, "model": "",
+             "system_fingerprint": "", "choices": [
+                {"index": 0, "delta": {"role": "assistant", "content": "3"}, "logprobs": None,
+                 "finish_reason": None}
+            ]}) + postfix
+        await asyncio.sleep(1)
+        yield prefix + json.dumps(
+            {"id": "chatcmpl-123", "object": "chat.completion.chunk", "created": 1694268190, "model": "",
+             "system_fingerprint": "", "choices": [
+                {"index": 0, "delta": {"role": "assistant", "content": "4"}, "logprobs": None,
+                 "finish_reason": None}
+            ]}) + postfix
+        await asyncio.sleep(1)
+        yield prefix + json.dumps(
+            {"id": "chatcmpl-123", "object": "chat.completion.chunk", "created": 1694268190, "model": "",
+             "system_fingerprint": "", "choices": [
+                {"index": 0, "delta": {"role": "assistant", "content": "5"}, "logprobs": None,
+                 "finish_reason": None}
+            ]}) + postfix
+        await asyncio.sleep(1)
+        yield prefix + json.dumps(
+            {"id": "chatcmpl-123", "object": "chat.completion.chunk", "created": 1694268190, "model": "",
+             "system_fingerprint": "", "choices": [
+                {"index": 0, "delta": {"role": "assistant", "content": "6"}, "logprobs": None,
+                 "finish_reason": None}
+            ]}) + postfix
+
+
     try:
         stream = await litellm.acompletion(
             model=model_name, messages=messages, stream=True,
@@ -171,4 +217,9 @@ class ChatCompletionsRouter(AuthRouter):
         else:
             raise HTTPException(status_code=400, detail=f"Model {model_record.name}: Backend {model_record.backend} is not supported")
 
-        return StreamingResponse(response_streamer, media_type="text/event-stream")
+        async def custom_stream():
+            async for chunk in response_streamer:
+                info(f"chunk: {chunk}")
+                yield chunk
+
+        return StreamingResponse(custom_stream(), media_type="text/event-stream")
